@@ -1,59 +1,48 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const START_PATH = '/select?howto=1';
 
 export default function Home() {
-  const router = useRouter();
+  const navigate = useNavigate();
+
+  const goToSelect = useCallback(() => {
+    navigate(START_PATH);
+  }, [navigate]);
+
+  useEffect(() => {
+    const handleKeyDown = () => goToSelect();
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [goToSelect]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900 flex flex-col items-center justify-center p-8 relative overflow-hidden">
-      {/* Retro scan lines overlay */}
-      <div className="absolute inset-0 scan-lines pointer-events-none"></div>
-      
-      {/* CRT flicker effect */}
-      <div className="absolute inset-0 crt-flicker pointer-events-none"></div>
+    <main
+      className="pixel-text min-h-screen w-full flex flex-col bg-black"
+    >
+      {/* Full viewport width: two sections, no navbar */}
+      <div className="w-full flex-1 flex flex-col min-h-screen overflow-hidden">
+        {/* Top: dark blue + logo only */}
+        <section className="flex-1 min-h-[200px] flex items-end justify-center pb-12 sm:pb-16 md:pb-20 p-4 sm:p-6 md:p-8 bg-black">
+          <img
+            src="/logo.png"
+            alt=""
+            className="flex-shrink-0 w-96 h-auto sm:w-[32rem] md:w-[40rem] lg:w-[48rem] pixel-dot object-contain"
+          />
+        </section>
 
-      {/* Main title with retro arcade styling */}
-      <div className="text-center mb-12 relative z-10">
-        <div className="bg-black border-4 border-yellow-400 p-8 mb-8 inline-block retro-glow">
-          <h1 className="text-5xl md:text-7xl font-extrabold text-yellow-400 pixel-text">
-            PENALTY PREDICTOR
-          </h1>
-        </div>
-        
-        <div className="bg-black border-2 border-yellow-400 p-6 inline-block">
-          <p className="text-gray-300 text-lg md:text-xl pixel-text">
-            SCORE AS MANY PENALTIES AS YOU CAN
-          </p>
-          <p className="text-yellow-300 text-sm md:text-base pixel-text mt-2">
-            YOUR RUN ENDS AFTER 5 SAVES
-          </p>
-        </div>
-      </div>
-
-      {/* Retro arcade play button */}
-      <div className="text-center relative z-10">
-        <button
-          onClick={() => router.push('/select?howto=1')}
-          className="arcade-button relative px-16 py-8 font-bold text-2xl bg-yellow-400 hover:bg-yellow-300 text-black shadow-[0_12px_0_rgba(0,0,0,0.8)] hover:shadow-[0_8px_0_rgba(0,0,0,0.8)] transition-all duration-200 pixel-text border-4 border-black"
-        >
-          INSERT COIN
-        </button>
-        
-        <div className="mt-6">
-          <p className="text-yellow-300 text-sm pixel-text">
-            PRESS START TO BEGIN
-          </p>
-        </div>
-      </div>
-
-      {/* Retro arcade footer */}
-      <div className="absolute bottom-4 left-4 right-4 text-center">
-        <div className="bg-black border-2 border-yellow-400 p-3 inline-block">
-          <p className="text-yellow-300 text-xs pixel-text">
-            HIGH SCORE: 999999 • CREDITS: 1 • 2024 ARCADE EDITION
-          </p>
-        </div>
+        {/* Bottom: green strip 35% of viewport; black rectangle always visible, only text flashes */}
+        <section className="flex-shrink-0 h-[35vh] bg-black flex items-center justify-center p-6 sm:p-8">
+          <button
+            type="button"
+            onClick={goToSelect}
+            className="bg-black px-6 py-4 sm:px-8 sm:py-5 text-white text-sm sm:text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-green-800"
+          >
+            <span className="arcade-blink">PRESS ANY KEY TO PLAY</span>
+          </button>
+        </section>
       </div>
     </main>
   );

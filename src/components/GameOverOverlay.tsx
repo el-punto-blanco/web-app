@@ -52,7 +52,7 @@ export function GameOverOverlay({
       <div className="bg-gray-800 p-8 rounded-lg shadow-2xl max-w-2xl mx-4 text-center">
         <h2 className="text-4xl font-bold text-red-400 mb-4">GAME OVER!</h2>
         <p className="text-white text-lg mb-6">
-          You've used all 5 attempts!<br/>
+          You've used all 3 attempts!<br/>
           Final Score: {stats.goals} goals out of {stats.shots} shots
         </p>
         

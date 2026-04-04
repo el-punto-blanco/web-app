@@ -33,6 +33,7 @@ interface GoalkeeperPosition {
 
 // Game configuration
 const GOAL_CONFIG = { width: 500, height: 200, depth: 30 };
+const MAX_ATTEMPTS = 3;
 
 const GK = {
   baseReactionMs: 180,
@@ -65,7 +66,7 @@ export function useGameLogic() {
   const [shotHistory, setShotHistory] = useState<ShotHistoryItem[]>([]);
   const [shotTarget, setShotTarget] = useState<{ x: number; y: number; z: number } | null>(null);
   const [gameOver, setGameOver] = useState(false);
-  const [attemptsLeft, setAttemptsLeft] = useState(5);
+  const [attemptsLeft, setAttemptsLeft] = useState(MAX_ATTEMPTS);
 
   // Keeper refs
   const gkDiveFieldRef = useRef<{ x: number; y: number } | null>(null);
@@ -99,7 +100,7 @@ export function useGameLogic() {
   // Restart game function
   const handleRestart = useCallback(() => {
     setGameOver(false);
-    setAttemptsLeft(5);
+    setAttemptsLeft(MAX_ATTEMPTS);
     setStats({ goals: 0, streak: 0, shots: 0, best: 0 });
     setShotHistory([]);
     setResult('');

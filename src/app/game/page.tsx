@@ -1,21 +1,26 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { countries } from '../../lib/countries';
+import { getCountryTheme } from '../../lib/countryTheme';
 import { useGameLogic } from '../../hooks/useGameLogic';
 import { useCoordinateSystem } from '../../hooks/useCoordinateSystem';
 import { GameOverOverlay } from '../../components/GameOverOverlay';
 import { StatsBar } from '../../components/StatsBar';
 import { ShotChart } from '../../components/ShotChart';
 
-export default function GamePage() {
-  const searchParams = useSearchParams();
+function GameContent() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const selectedCountry = searchParams.get('country');
-  useEffect(() => { if (!selectedCountry) window.location.href = '/'; }, [selectedCountry]);
+  useEffect(() => {
+    if (!selectedCountry) navigate('/', { replace: true });
+  }, [selectedCountry, navigate]);
 
   const countryName = selectedCountry || 'United States';
   const countryData = countries.find(c => c.name === countryName);
+  const theme = getCountryTheme(countryData?.code);
 
   // Use custom hooks
   const {
@@ -131,7 +136,7 @@ export default function GamePage() {
 
   // Go back to main menu
   const handleMainMenu = () => {
-    window.location.href = '/';
+    navigate('/');
   };
 
   // Handle game click
@@ -160,13 +165,20 @@ export default function GamePage() {
 
   // --- UI ---
   return (
-    <main className="min-h-screen bg-gradient-to-b from-indigo-900 to-indigo-900 relative overflow-hidden">
+    <main
+      className="relative min-h-screen overflow-hidden"
+      style={{
+        background: `linear-gradient(to bottom, ${theme.deep} 0%, ${theme.primary} 45%, ${theme.deep} 100%)`,
+      }}
+    >
       {/* Main Menu Button */}
       <button
+        type="button"
         onClick={handleMainMenu}
-        className="absolute top-2 left-2 z-20 bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg shadow-lg transition-colors"
+        className="pixel-text absolute left-2 top-2 z-20 border-4 border-black px-3 py-2 text-[0.6rem] font-bold uppercase text-white shadow-[0_4px_0_rgba(0,0,0,0.35)] transition-opacity hover:opacity-90 sm:left-3 sm:top-3 sm:px-4 sm:py-2 sm:text-xs"
+        style={{ backgroundColor: theme.primary }}
       >
-        🏠 MAIN MENU
+        MAIN MENU
       </button>
 
       {/* Stats Bar */}
@@ -175,13 +187,15 @@ export default function GamePage() {
         countryFlag={countryData?.flag || ''}
         stats={stats}
         attemptsLeft={attemptsLeft}
+        themePrimary={theme.primary}
       />
 
       {/* Game scene */}
       <div ref={gameRef} className="h-screen pt-20 cursor-crosshair relative" onClick={handleGameClick}>
         {/* Field */}
-        <div className="absolute bottom-0 left-0 right-0 h-1/2"
-             style={{ background: 'linear-gradient(to top, #16a34a 0%, #22c55e 50%, #4ade80 100%)' }}>
+        <div
+          className="absolute bottom-0 left-0 right-0 h-1/2 bg-[#22c55e]"
+        >
           <div className="absolute bottom-0 left-1/2 w-px h-full bg-white opacity-30 transform -translate-x-1/2"></div>
           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-64 h-32 border-2 border-white opacity-20"></div>
           <div className="absolute bottom-20 left-1/2 w-2 h-2 bg-white rounded-full transform -translate-x-1/2"></div>
@@ -337,4 +351,8 @@ export default function GamePage() {
       />
     </main>
   );
+}
+
+export default function GamePage() {
+  return <GameContent />;
 }

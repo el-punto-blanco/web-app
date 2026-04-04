@@ -1,189 +1,125 @@
 'use client';
 
-import { countries } from '../lib/countries';
 import { Country } from '../lib/types';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
+
+const COLS = 6;
+const MAX_ROWS = 8;
+
+/** Flag tile width (PNG + SVG); scaled −25% from prior step */
+const TILE =
+  'box-border w-[6.75rem] sm:w-[8.015625rem] md:w-[10.125rem]';
 
 interface CountryGridProps {
+  items: Country[];
   selectedCountry: string | null;
   onCountrySelect: (country: string) => void;
 }
 
-export const CountryGrid: React.FC<CountryGridProps> = ({ 
-  selectedCountry, 
-  onCountrySelect 
+function chunkRows(list: Country[], cols: number, maxRows: number): Country[][] {
+  const cap = cols * maxRows;
+  const visible = list.slice(0, cap);
+  const rows: Country[][] = [];
+  for (let i = 0; i < visible.length; i += cols) {
+    rows.push(visible.slice(i, i + cols));
+  }
+  return rows;
+}
+
+export const CountryGrid: React.FC<CountryGridProps> = ({
+  items,
+  selectedCountry,
+  onCountrySelect,
 }) => {
-  const gridRef = useRef<HTMLDivElement>(null);
-  const selectedIndex = countries.findIndex(c => c.name === selectedCountry);
-  const cols = 4; // Number of columns in the grid
+  const selectedIndex = items.findIndex((c) => c.name === selectedCountry);
+
+  const rows = useMemo(
+    () => chunkRows(items, COLS, MAX_ROWS),
+    [items],
+  );
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!gridRef.current) return;
+      if (items.length === 0) return;
+      if (e.shiftKey || e.altKey || e.metaKey || e.ctrlKey) return;
 
-      let newIndex = selectedIndex;
-      
+      const idx = selectedIndex < 0 ? 0 : selectedIndex;
+      let newIndex = idx;
+
       switch (e.key) {
         case 'ArrowUp':
           e.preventDefault();
-          newIndex = Math.max(0, selectedIndex - cols);
+          newIndex = Math.max(0, idx - COLS);
           break;
         case 'ArrowDown':
           e.preventDefault();
-          newIndex = Math.min(countries.length - 1, selectedIndex + cols);
+          newIndex = Math.min(items.length - 1, idx + COLS);
           break;
         case 'ArrowLeft':
           e.preventDefault();
-          newIndex = Math.max(0, selectedIndex - 1);
+          newIndex = Math.max(0, idx - 1);
           break;
         case 'ArrowRight':
           e.preventDefault();
-          newIndex = Math.min(countries.length - 1, selectedIndex + 1);
+          newIndex = Math.min(items.length - 1, idx + 1);
           break;
-        case 'Enter':
-          e.preventDefault();
-          if (selectedCountry) {
-            // Trigger the confirm action - this will be handled by the parent
-            const confirmButton = document.querySelector('button[onclick*="handleConfirm"]') as HTMLButtonElement;
-            if (confirmButton) confirmButton.click();
-          }
-          return;
         default:
           return;
       }
 
-      if (newIndex !== selectedIndex && newIndex >= 0 && newIndex < countries.length) {
-        onCountrySelect(countries[newIndex].name);
+      if (newIndex !== idx && newIndex >= 0 && newIndex < items.length) {
+        onCountrySelect(items[newIndex].name);
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [selectedIndex, selectedCountry, onCountrySelect]);
+  }, [selectedIndex, items, onCountrySelect]);
+
+  if (items.length === 0) {
+    return (
+      <p className="text-yellow-400 text-center text-xs sm:text-sm">
+        No teams in this region.
+      </p>
+    );
+  }
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
-      {/* Retro arcade title */}
-      <div className="text-center mb-8">
-        <h2 className="text-3xl md:text-4xl font-bold text-yellow-400 mb-2 pixel-text">
-          SELECT YOUR TEAM
-        </h2>
-        <div className="w-64 h-1 bg-yellow-400 mx-auto mb-4"></div>
-      </div>
+    <div className="flex w-full justify-center">
+      <div className="flex w-full max-w-full flex-col items-center gap-y-[0.5625rem] sm:gap-y-[1.265625rem]">
+        {rows.map((row, rowIndex) => (
+          <div
+            key={rowIndex}
+            className="flex w-full flex-row flex-wrap justify-center gap-x-[0.5625rem] gap-y-[0.5625rem] sm:gap-x-[1.265625rem] sm:gap-y-[1.265625rem]"
+          >
+            {row.map((country) => {
+              const isSelected = selectedCountry === country.name;
 
-      {/* Main grid container with retro styling */}
-      <div 
-        ref={gridRef}
-        className="bg-black border-4 border-yellow-400 p-6 rounded-none shadow-[0_0_20px_rgba(255,255,0,0.3)]"
-        tabIndex={-1}
-      >
-        <div className="grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
-          {countries.map((country, index) => (
-            <button
-              key={country.code}
-              onClick={() => onCountrySelect(country.name)}
-              className={`
-                group relative overflow-hidden transition-all duration-200
-                ${selectedCountry === country.name
-                  ? 'transform scale-105'
-                  : 'hover:transform hover:scale-105'
-                }
-                focus:outline-none
-                ${index === selectedIndex ? 'ring-2 ring-yellow-400 ring-offset-2 ring-offset-black' : ''}
-              `}
-            >
-              {/* Main card container */}
-              <div className={`
-                relative bg-gray-800 border-2 p-3 md:p-4
-                ${selectedCountry === country.name
-                  ? 'border-yellow-400 bg-yellow-900/20 shadow-[0_0_15px_rgba(255,255,0,0.5)]'
-                  : 'border-gray-600 hover:border-yellow-300 hover:bg-gray-700'
-                }
-                transition-all duration-200
-              `}>
-                
-                {/* Flag container with pixel art frame */}
-                <div className={`
-                  w-16 h-12 md:w-20 md:h-16 mb-3 mx-auto relative
-                  ${selectedCountry === country.name
-                    ? 'bg-yellow-400/20'
-                    : 'bg-gray-700'
-                  }
-                  border-2 border-gray-500
-                `}>
-                  {/* Pixel art corner decorations */}
-                  <div className="absolute top-0 left-0 w-2 h-2 bg-yellow-400"></div>
-                  <div className="absolute top-0 right-0 w-2 h-2 bg-yellow-400"></div>
-                  <div className="absolute bottom-0 left-0 w-2 h-2 bg-yellow-400"></div>
-                  <div className="absolute bottom-0 right-0 w-2 h-2 bg-yellow-400"></div>
-                  
-                  {/* Flag image */}
+              return (
+                <button
+                  key={country.code}
+                  type="button"
+                  onClick={() => onCountrySelect(country.name)}
+                  className={`
+                    ${TILE} shrink-0
+                    p-0 border-4 transition-colors duration-150
+                    focus:outline-none
+                    ${isSelected
+                      ? 'border-yellow-400'
+                      : 'border-transparent hover:border-yellow-400/50'
+                    }
+                  `}
+                >
                   <img
                     src={country.flag}
                     alt={`${country.name} flag`}
-                    className="w-full h-full object-contain p-1"
-                    onError={(e) => {
-                      // Fallback to country code in a styled container
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      const parent = target.parentElement;
-                      if (parent) {
-                        parent.innerHTML = `
-                          <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-red-600">
-                            <span class="text-white text-xs md:text-sm font-bold pixel-text">${country.code}</span>
-                          </div>
-                        `;
-                      }
-                    }}
+                    className="block w-full h-auto object-contain pixel-dot"
                   />
-                </div>
-
-                {/* Country name with retro styling */}
-                <div className="text-center">
-                  <span className={`
-                    text-xs md:text-sm font-bold block
-                    ${selectedCountry === country.name
-                      ? 'text-yellow-400'
-                      : 'text-white group-hover:text-yellow-300'
-                    }
-                    pixel-text
-                    transition-colors duration-200
-                  `}>
-                    {country.name.toUpperCase()}
-                  </span>
-                  
-                  {/* Country code */}
-                  <span className={`
-                    text-xs block mt-1
-                    ${selectedCountry === country.name
-                      ? 'text-yellow-300'
-                      : 'text-gray-400 group-hover:text-gray-300'
-                    }
-                    pixel-text
-                    transition-colors duration-200
-                  `}>
-                    {country.code}
-                  </span>
-                </div>
-
-                {/* Selection indicator */}
-                {selectedCountry === country.name && (
-                  <div className="absolute top-0 right-0 w-0 h-0 border-l-[12px] border-l-yellow-400 border-t-[12px] border-t-yellow-400 border-r-[12px] border-r-transparent border-b-[12px] border-b-transparent"></div>
-                )}
-
-                {/* Hover effect - scan lines */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Retro instructions */}
-      <div className="text-center mt-6">
-        <p className="text-yellow-300 text-sm md:text-base pixel-text">
-          USE ARROW KEYS OR CLICK TO SELECT • PRESS ENTER TO CONFIRM
-        </p>
+                </button>
+              );
+            })}
+          </div>
+        ))}
       </div>
     </div>
   );
