@@ -46,8 +46,11 @@ export function StatsBar({
           </span>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-x-5 gap-y-2 text-base font-bold uppercase leading-none text-white sm:gap-x-7 sm:text-lg">
-          <span className="inline-flex items-center leading-none">SCORE {stats.goals}</span>
           <span className="inline-flex items-center gap-2 leading-none">
+            <span>SCORE</span>
+            <span className="min-w-[2ch] text-right">{stats.goals}</span>
+          </span>
+          <span className="inline-flex items-center gap-3 leading-none">
             <img
               src={isFireAnimated ? '/fire-streak.gif' : '/fire-streak-static.png'}
               alt=""
@@ -59,7 +62,7 @@ export function StatsBar({
                 transition: 'filter 160ms linear',
               }}
             />
-            <span className="leading-none">{stats.streak}</span>
+            <span className="min-w-[3ch] text-left leading-none">x{stats.streak}</span>
           </span>
           <span className="inline-flex items-center gap-2 leading-none sm:gap-3">
             {Array.from({ length: MAX_ATTEMPTS }).map((_, index) => {
