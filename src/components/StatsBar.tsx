@@ -1,5 +1,5 @@
 interface StatsBarProps {
-  countryName: string;
+  countryCode: string;
   countryFlag: string;
   stats: {
     goals: number;
@@ -13,7 +13,7 @@ interface StatsBarProps {
 }
 
 export function StatsBar({
-  countryName,
+  countryCode,
   countryFlag,
   stats,
   attemptsLeft,
@@ -21,55 +21,60 @@ export function StatsBar({
 }: StatsBarProps) {
   const MAX_ATTEMPTS = 3;
   const MAX_STREAK_HEAT = 5;
-  const shotPercentage =
-    stats.shots > 0 ? Math.round((stats.goals / stats.shots) * 100) : 0;
-  const flameHeat = Math.min(stats.streak, MAX_STREAK_HEAT) / MAX_STREAK_HEAT;
+  const flameHeat =
+    Math.min(Math.max(stats.streak - 1, 0), MAX_STREAK_HEAT - 1) /
+    (MAX_STREAK_HEAT - 1);
+  const isFireAnimated = stats.streak > 1;
 
   return (
     <div
-      className="absolute top-4 left-4 right-4 z-10 mx-auto max-w-[1152px] border-4 border-black px-3 py-3 shadow-[0_4px_0_rgba(0,0,0,0.4)] sm:px-4 sm:py-4 pixel-text"
+      className="pixel-text absolute top-4 left-4 right-4 z-10 mx-auto max-w-[1152px] overflow-visible px-3 py-3 sm:px-4 sm:py-4"
       style={{ backgroundColor: themePrimary }}
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="h-7 w-10 shrink-0 overflow-hidden border-2 border-black bg-white sm:h-8 sm:w-12">
+        <div className="relative flex items-center gap-2 pl-10 sm:pl-12">
+          <div className="absolute left-[-2.5rem] top-1/2 h-[48px] w-[72px] -translate-y-[63%] overflow-hidden sm:left-[-2.875rem] sm:h-[54px] sm:w-[84px] sm:-translate-y-[58%]">
             <img
               src={countryFlag}
               alt=""
-              className="h-full w-full object-contain"
+              className="pixel-dot h-full w-full object-contain"
+              style={{ imageRendering: 'pixelated' }}
             />
           </div>
-          <span className="text-xs font-bold uppercase tracking-wide text-white sm:text-sm">
-            {countryName}
+          <span className="text-2xl font-bold uppercase leading-none tracking-wide text-white sm:text-3xl">
+            {countryCode}
           </span>
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-[0.55rem] font-bold uppercase text-white sm:gap-x-6 sm:text-[0.65rem]">
-          <span>GOALS {stats.goals}</span>
-          <span className="border-2 border-black bg-red-700 px-2 py-0.5">BEST {stats.best}</span>
-          <span className="text-2xl leading-none text-white sm:text-3xl">{shotPercentage}%</span>
-          <span className="flex items-center gap-2 text-xs sm:text-sm">
+        <div className="flex flex-wrap items-center justify-end gap-x-5 gap-y-2 text-base font-bold uppercase leading-none text-white sm:gap-x-7 sm:text-lg">
+          <span className="inline-flex items-center leading-none">SCORE {stats.goals}</span>
+          <span className="inline-flex items-center gap-2 leading-none">
             <img
-              src="/fire-streak.gif"
+              src={isFireAnimated ? '/fire-streak.gif' : '/fire-streak-static.png'}
               alt=""
-              className="h-8 w-8 sm:h-10 sm:w-10"
+              className="h-[3.375rem] w-[3.375rem] sm:h-[4.125rem] sm:w-[4.125rem]"
               style={{
                 imageRendering: 'pixelated',
-                opacity: flameHeat,
-                filter: `saturate(${0.25 + flameHeat * 1.75}) brightness(${0.35 + flameHeat * 0.65})`,
+                opacity: 1,
+                filter: `saturate(${0.35 + flameHeat * 2.05}) brightness(${0.7 + flameHeat * 0.3})`,
+                transition: 'filter 160ms linear',
               }}
             />
-            <span>{stats.streak}</span>
+            <span className="leading-none">{stats.streak}</span>
           </span>
-          <span className="flex items-center gap-1.5 sm:gap-2">
+          <span className="inline-flex items-center gap-2 leading-none sm:gap-3">
             {Array.from({ length: MAX_ATTEMPTS }).map((_, index) => {
               const active = index < attemptsLeft;
               return (
-                <span
+                <img
                   key={index}
-                  className={`h-4 w-4 border-2 border-black sm:h-5 sm:w-5 ${
-                    active ? 'bg-white' : 'bg-neutral-900'
-                  }`}
-                  style={{ borderRadius: '2px' }}
+                  src="/logo.svg"
+                  alt=""
+                  className="h-7 w-7 sm:h-9 sm:w-9"
+                  style={{
+                    imageRendering: 'pixelated',
+                    opacity: active ? 1 : 0.25,
+                    filter: active ? 'none' : 'grayscale(1) saturate(0)',
+                  }}
                   aria-hidden="true"
                 />
               );

@@ -168,22 +168,21 @@ function GameContent() {
     <main
       className="relative min-h-screen overflow-hidden"
       style={{
-        background: `linear-gradient(to bottom, ${theme.deep} 0%, ${theme.primary} 45%, ${theme.deep} 100%)`,
+        backgroundColor: '#0b1238',
       }}
     >
       {/* Main Menu Button */}
       <button
         type="button"
         onClick={handleMainMenu}
-        className="pixel-text absolute left-2 top-2 z-20 border-4 border-black px-3 py-2 text-[0.6rem] font-bold uppercase text-white shadow-[0_4px_0_rgba(0,0,0,0.35)] transition-opacity hover:opacity-90 sm:left-3 sm:top-3 sm:px-4 sm:py-2 sm:text-xs"
-        style={{ backgroundColor: theme.primary }}
+        className="pixel-text absolute left-2 top-2 z-20 border-4 border-black bg-black px-3 py-2 text-[0.6rem] font-bold uppercase text-white shadow-[0_4px_0_rgba(0,0,0,0.35)] transition-opacity hover:opacity-90 sm:left-3 sm:top-3 sm:px-4 sm:py-2 sm:text-xs"
       >
         MAIN MENU
       </button>
 
       {/* Stats Bar */}
       <StatsBar
-        countryName={countryName}
+        countryCode={countryData?.code || countryName.slice(0, 3).toUpperCase()}
         countryFlag={countryData?.flag || ''}
         stats={stats}
         attemptsLeft={attemptsLeft}
