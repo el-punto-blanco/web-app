@@ -20,12 +20,12 @@ export default function Home() {
 
   return (
     <main
-      className="pixel-text min-h-screen w-full flex flex-col bg-black"
+      className="pixel-text min-h-screen w-full flex flex-col pixel-bg"
     >
       {/* Full viewport width: two sections, no navbar */}
       <div className="w-full flex-1 flex flex-col min-h-screen overflow-hidden">
-        {/* Top: dark blue + logo only */}
-        <section className="flex-1 min-h-[200px] flex items-end justify-center pb-12 sm:pb-16 md:pb-20 p-4 sm:p-6 md:p-8 bg-black">
+        {/* Top: dark blue sky + logo only */}
+        <section className="flex-1 min-h-[200px] flex items-end justify-center pb-12 sm:pb-16 md:pb-20 p-4 sm:p-6 md:p-8 pixel-bg">
           <img
             src="/logo.png"
             alt=""
@@ -33,8 +33,8 @@ export default function Home() {
           />
         </section>
 
-        {/* Bottom: green strip 35% of viewport; black rectangle always visible, only text flashes */}
-        <section className="flex-shrink-0 h-[35vh] bg-black flex items-center justify-center p-6 sm:p-8">
+        {/* Bottom: green grass strip 35% of viewport; black button always visible, only text flashes */}
+        <section className="flex-shrink-0 h-[35vh] pixel-grass flex items-center justify-center p-6 sm:p-8">
           <button
             type="button"
             onClick={goToSelect}

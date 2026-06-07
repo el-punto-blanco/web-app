@@ -28,37 +28,48 @@ export function HowToPlayModal({ open, onClose, onStartGame }: HowToPlayModalPro
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden mx-4">
-        <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h2 className="text-2xl font-extrabold">How To Play</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+     
+      <div className="absolute inset-0 bg-black/70" onClick={onClose} />
+
+    
+      <div className="pixel-text relative z-10 w-full max-w-md bg-white border-4 border-black p-6 text-black">
+        <h2 className="text-base mb-4">How to play</h2>
+
+        <p className="text-[0.6rem] leading-relaxed mb-4">
+          Score as many penalties as you can.
+        </p>
+
+        <p className="text-[0.6rem] mb-2">Each shot has 3 outcomes</p>
+        <div className="text-[0.6rem] leading-relaxed mb-4">
+          <div>X &ndash; Miss</div>
+          <div>G &ndash; Goal</div>
+          <div>S &ndash; Save</div>
         </div>
-        <div className="p-6 space-y-4 text-gray-800">
-          <p><strong>Score as many penalties as you can.</strong><br/>Your run ends once the keeper makes 5 saves.</p>
-          <p>Aim anywhere on the goal and shoot.</p>
-          <p>Each shot has one of three outcomes:</p>
-          <ul className="list-disc pl-6 space-y-1">
-            <li>🟩 <strong>Goal</strong> — you score.</li>
-            <li>🧤 <strong>Save</strong> — the keeper stops it. Reach 5 saves and your run ends.</li>
-            <li>🟥 <strong>Miss</strong> — you miss the net.</li>
-          </ul>
-          <p>You get 3 sessions per day. After finishing a session, tap Share to copy your result.</p>
+
+        <p className="text-[0.6rem] mb-2">Relevant:</p>
+        <div className="flex justify-between text-[0.6rem] mb-4">
+          <span>Streak</span>
+          <span>Accuracy</span>
+          <span>Goals</span>
         </div>
-        <div className="px-6 py-4 border-t bg-gray-50 flex items-center justify-between gap-4">
-          <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-600">
+
+        <p className="text-[0.6rem] leading-relaxed mb-6">
+          Top of the leaderboard for each month wins a prize!
+        </p>
+
+        <div className="flex items-center justify-between gap-4">
+          <label className="flex items-center gap-2 text-[0.55rem] cursor-pointer">
             <input
               type="checkbox"
               checked={dontShowAgain}
               onChange={(e) => setDontShowAgain(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300"
             />
             Don&apos;t show again
           </label>
           <button
             onClick={handleStartGame}
-            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold"
+            className="bg-yellow-400 text-black border-2 border-black px-4 py-2 text-[0.6rem] hover:opacity-90"
           >
             Start Game
           </button>
