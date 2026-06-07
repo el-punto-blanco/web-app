@@ -29,10 +29,10 @@ export function HowToPlayModal({ open, onClose, onStartGame }: HowToPlayModalPro
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* الطبقة 1: الغطاء الأسود الشفّاف، الضغط عليه يُغلق */}
+     
       <div className="absolute inset-0 bg-black/70" onClick={onClose} />
 
-      {/* الطبقة 2: الصندوق الأبيض البكسلي */}
+    
       <div className="pixel-text relative z-10 w-full max-w-md bg-white border-4 border-black p-6 text-black">
         <h2 className="text-base mb-4">How to play</h2>
 
